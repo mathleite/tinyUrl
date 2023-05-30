@@ -1,0 +1,36 @@
+version: '3.9'
+services:
+  app:
+    build:
+      context: .
+      target: dev
+    ports:
+      - '8080:8080'
+    container_name: app
+    command: sh -c 'pnpm install && pnpm run api:start'
+    working_dir: /app
+    volumes:
+      - .:/app
+    environment:
+      - APP_HOST=localhost:8080
+    networks:
+      - backend
+    depends_on:
+      - redis
+
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - '6379:6379'
+    volumes:
+      - .redis:/data
+    environment:
+      - REDIS_PASSWORD=docker123
+      - REDIS_PORT_NUMBER=6379
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
